@@ -19,12 +19,14 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 // 声明使用路由器中间件
 const indexRouter = require('./routers')
-app.use('/api', indexRouter) //
+app.use('/api', indexRouter) //此处是加了前缀api，也可以不加
 
 const fs = require('fs')
 
 // 必须在路由器中间之后声明使用
 // 问题：使用BrowserRouter，刷新某个路由路径时，会出现 404 的错误
+// 原因: 项目根路径（后台里放了前台打包生成的文件）后的path 路径会被当作后台路由路径, 去请求对应的后台路由，但没有相应的路由
+// 解决: 使用自定义中间件去读取返回index 页面展现
 app.use((req, res) => {
     fs.readFile(__dirname + '/public/index.html', (err, data) => {
         if (err) {
